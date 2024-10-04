@@ -1,0 +1,7 @@
+<template>
+  <h1 if.bind="keyCloakService.isAuthenticated">${keyCloakService.profile.username}</h1>
+  <span>Not authenticated</span>
+  <button click.delegate="getUnsecured()">Get Unsecured</button>
+
+  <button click.delegate="getSecured()">Get Secured</button>
+</template>
