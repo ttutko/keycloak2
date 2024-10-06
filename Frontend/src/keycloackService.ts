@@ -1,6 +1,9 @@
 import { HttpClient } from 'aurelia-fetch-client';
 import Keycloak from "keycloak-js";
-import { computedFrom, autoinject } from "aurelia-framework";
+import { computedFrom, autoinject, LogManager } from "aurelia-framework";
+import { Logger } from "aurelia-logging";
+
+const logger: Logger = LogManager.getLogger('KeycloakService');
 
 @autoinject
 export class KeycloakService {
@@ -18,9 +21,9 @@ export class KeycloakService {
     }
 
     public async getToken() {
-        console.log("getToken");
+        logger.debug("getToken");
         await this.instance.updateToken(30);
-        console.log("getToken complete", this.instance.token);
+        logger.debug("getToken complete", this.instance.token);
 
         return this.instance.token;
     }
@@ -34,19 +37,26 @@ export class KeycloakService {
 
         let initOptions: Keycloak.KeycloakInitOptions = {
             onLoad: 'check-sso',
+            enableLogging: true,
             silentCheckSsoRedirectUri: `${window.location.origin}/${this.silentCheckSso}`
         }
 
-        let authenticated = await this.instance.init(initOptions);
+        try {
+            let authenticated = await this.instance.init(initOptions);
 
-        if (!authenticated) {
-            console.debug("KeycloakService: Not authenticated at init")
-            // await _this.instance.login();
+            if (!authenticated) {
+                logger.debug("KeycloakService: Not authenticated at init")
 
-        } else {
-            console.debug("KeycloakService: Authenticated at init")
-            this.profile = await this.instance.loadUserProfile();
+            } else {
+                logger.debug("KeycloakService: Authenticated")
+                this.profile = await this.instance.loadUserProfile();
+                logger.debug("profile", this.profile)
+            }
         }
+        catch (error) {
+            logger.error("Failed to init", error);
+        }
+
 
         this.instance.onAuthSuccess = () => { }
         this.instance.onAuthLogout = () => { }
