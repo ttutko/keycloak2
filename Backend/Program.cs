@@ -5,8 +5,22 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-  .AddAuthorization()
-  .AddAuthentication(options => 
+    .AddCors(options =>
+    {
+      options.AddDefaultPolicy(builder =>
+      {
+        builder.WithOrigins("http://localhost:8080", "http://127.0.0.1:8080").AllowAnyHeader().WithMethods("GET").AllowCredentials();
+      });
+    })
+   .AddAuthorization()
+  // .AddCors(options =>
+  // {
+  //   options.AddDefaultPolicy(builder =>
+  //   {
+  //     builder.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+  //   });
+  // })
+  .AddAuthentication(options =>
     {
       options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
       options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -20,7 +34,7 @@ builder.Services
         options.Cookie.IsEssential = true;
 
       })
-  .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => 
+  .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
       {
         options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
         options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
@@ -32,8 +46,8 @@ builder.Services
         options.ResponseMode = OpenIdConnectResponseMode.FormPost;
 
 
-        options.Authority = "http://localhost:8888/realms/MyRealm";
-        options.ClientId = "myclient";
+        options.Authority = "http://localhost:8888/realms/master";
+        options.ClientId = "aurelia-client-id";
         options.ClientSecret = "WbqxYKBiTq6wikml2kPjjH6vcxXb7c5A";
         options.ResponseType = OpenIdConnectResponseType.Code;
         options.UsePkce = true;
@@ -51,7 +65,7 @@ builder.Services
         {
           OnRedirectToIdentityProviderForSignOut = context =>
           {
-            context.Response.Redirect("http://localhost:8889");
+            context.Response.Redirect("http://localhost:8080");
             context.HandleResponse();
 
             return Task.CompletedTask;
@@ -65,12 +79,14 @@ builder.Services
             return Task.FromResult(0);
           }
         };
-      });
+      }
+
+    );
 
 var app = builder.Build();
-
+app.UseCors();
 
 app.MapGet("/", () => "Hello World!");
-app.MapGet("/secure", () => "This page is secure!" ).RequireAuthorization();
+app.MapGet("/secure", () => "This page is secure!").RequireCors().RequireAuthorization();
 
 app.Run();
