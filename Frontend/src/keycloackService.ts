@@ -81,11 +81,16 @@ export class KeycloakService {
         })
         .withInterceptor({
           async request(request) {
+            try {
             console.log(`Requesting ${request.method} ${request.url}`);
             let token = await _this.getToken();
             request.headers.append("Authorization", `Bearer ${token}`)
             console.log("Request interceptor complete");
             return request;
+            }
+            catch (error) {
+              logger.error("INTERCEPTOR", error);
+            }
           },
           response(response) {
             console.log(`Received ${response.status} ${response.url}`);

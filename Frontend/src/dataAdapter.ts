@@ -3,7 +3,7 @@ import { autoinject } from 'aurelia-framework';
 
 @autoinject
 export class DataAdapter {
-  private baseUrl = "https://localhost:5001";
+  private baseUrl = "http://localhost:5024";
 
   constructor(private httpClient: HttpClient) {
 
@@ -19,7 +19,9 @@ export class DataAdapter {
 
   public async getSecuredPage() {
     let response = await this.httpClient.fetch(`${this.baseUrl}/secure`, {
-      method: "GET"
+      method: "GET",
+      credentials: "include"
+
     });
 
     return await response.text();

@@ -30,7 +30,8 @@ export class App {
     // if (!this.keyCloakService.isAuthenticated) {
     //   await this.keyCloakService.login();
     // }
-    this.dataAdapter.getSecuredPage();
+    let response = await this.dataAdapter.getSecuredPage();
+    this.lastWebRequest = response;
   }
 
   async logout() {
