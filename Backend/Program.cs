@@ -5,19 +5,19 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-   .AddCors(options =>
-   {
-     options.AddDefaultPolicy(builder =>
-     {
-       builder.WithOrigins("http://localhost:8080").AllowAnyHeader().WithMethods("GET").AllowCredentials();
-     });
-   })
+    .AddCors(options =>
+    {
+      options.AddDefaultPolicy(builder =>
+      {
+        builder.WithOrigins("http://localhost:8080", "http://127.0.0.1:8080").AllowAnyHeader().WithMethods("GET").AllowCredentials();
+      });
+    })
    .AddAuthorization()
   // .AddCors(options =>
   // {
   //   options.AddDefaultPolicy(builder =>
   //   {
-  //     builder.WithOrigins("http://localhost:8080").AllowAnyHeader().WithMethods("GET").AllowCredentials();
+  //     builder.WithOrigins("http://localhost:8080").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
   //   });
   // })
   .AddAuthentication(options =>
@@ -47,7 +47,7 @@ builder.Services
 
 
         options.Authority = "http://localhost:8888/realms/master";
-        options.ClientId = "keycloakTestApp";
+        options.ClientId = "aurelia-client-id";
         options.ClientSecret = "WbqxYKBiTq6wikml2kPjjH6vcxXb7c5A";
         options.ResponseType = OpenIdConnectResponseType.Code;
         options.UsePkce = true;
@@ -65,7 +65,7 @@ builder.Services
         {
           OnRedirectToIdentityProviderForSignOut = context =>
           {
-            context.Response.Redirect("http://localhost:8889");
+            context.Response.Redirect("http://localhost:8080");
             context.HandleResponse();
 
             return Task.CompletedTask;

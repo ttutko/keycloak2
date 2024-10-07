@@ -12,8 +12,8 @@ export class App {
   async attached() {
     try {
       await this.keyCloakService.init({
-        clientId: "keycloakTestApp",
-        realm: "master",
+        clientId: "aurelia-client-id",
+        realm: "MyRealm",
         url: "http://localhost:8888/"
       });
     } catch (e) {
