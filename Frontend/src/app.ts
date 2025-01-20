@@ -14,7 +14,7 @@ export class App {
       await this.keyCloakService.init({
         clientId: "DevFrontend",
         realm: "DevRealm",
-        url: "https://keycloak.dev.fa.com/"
+        url: "https://keycloak.dev.smooth.tnt/"
       });
     } catch (e) {
       console.debug("Keycloak not initialized")
