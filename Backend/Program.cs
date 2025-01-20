@@ -1,10 +1,3 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +11,7 @@ builder.Services
     {
       options.AddDefaultPolicy(builder =>
       {
-        builder.WithOrigins("http://localhost:8080", "http://127.0.0.1:8080", "https://localhost:5001").AllowAnyHeader().AllowCredentials(); //.WithMethods("GET").AllowCredentials();
+        builder.WithOrigins("http://localhost:5000", "http://127.0.0.1:5000", "https://web.dev.smooth.tnt").AllowAnyHeader().AllowCredentials(); //.WithMethods("GET").AllowCredentials();
       });
     })
   // .AddCors(options =>
@@ -33,6 +26,7 @@ builder.Services
       //options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
       options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
       options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+      options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
     })
   // .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -45,14 +39,15 @@ builder.Services
   //     })
   .AddJwtBearer(o =>
       {
-        o.Authority = "http://localhost:8888/realms/MyRealm";
+        o.Authority = "https://keycloak.dev.smooth.tnt/realms/DevRealm";
+        // o.MetadataAddress = "https://keycloak.dev.smooth.tnt/realms/DevRealm";
         o.Audience = "account";
         o.IncludeErrorDetails = true;
-        o.RequireHttpsMetadata = false;
+        // o.RequireHttpsMetadata = false;
         o.TokenValidationParameters = new TokenValidationParameters
         {
-          ValidIssuer = "http://localhost:8888/realm/MyRealm",
-          ValidAudience = "account"
+          ValidIssuer = "https://keycloak.dev.smooth.tnt/realms/DevRealm",
+          ValidAudience = "account"          
         };
 
       });
@@ -111,11 +106,13 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 app.UseCors();
 app.UseAuthentication();
+app.UseStaticFiles();
 app.UseAuthorization();
 //app.UseAntiforgery();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/insecure", () => "Hello World!");
 app.MapGet("/secure", () => "This page is secure!").RequireCors().RequireAuthorization();
 app.MapPost("/upload", FileHandler.Upload).RequireCors().DisableAntiforgery();
+app.MapFallbackToFile("index.html");
 
 app.Run();
