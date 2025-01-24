@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -108,6 +109,47 @@ app.UseAuthorization();
 
 app.MapGet("/insecure", () => "Hello World!");
 app.MapGet("/secure", () => "This page is secure!").RequireCors().RequireAuthorization();
+app.MapGet("/pushimage", async () =>
+  {
+    // var fileName = Path.GetTempFileName();
+    // try
+    // {
+    //   using(FileStream fs = File.OpenWrite(fileName))
+    //   {
+    //     await stream.CopyToAsync(fs);
+    //   }
+    //
+    //   var imageParts = "ttutko/testimage:v1".Split(':');
+    //   var tag = imageParts[1];
+    //   var name = $"registry/{imageParts[0]}";
+    //
+    //   var args = new List<string>() {
+    //     "cp",
+    //     "--from-oci-layout",
+    //     $"{fileName}:{tag}",
+    //     $"{name}:{tag}"
+    //   };
+    //
+    //   var start = new ProcessStartInfo {
+    //     FileName = "/oras/oras",
+    //     Arguments = string.Join(" ", args),
+    //     UseShellExecute = false,
+    //     RedirectStandardOutput = true
+    //   };
+    //
+    //   var outputFile = string.Empty;
+    //   using(var process = System.Diagnostics.Process.Start(start))
+    //   using(var reader = process.StandardOutput)
+    //   {
+    //     outputFile = await reader.ReadToEndAsync();
+    //     outputFile = outputFile.Replace("\n", "");
+    //   }
+    // }
+    // finally
+    // {
+    //   File.Delete(fileName);
+    // }
+  }).RequireCors().RequireAuthorization();
 app.MapFallbackToFile("index.html");
 
 app.Run();
