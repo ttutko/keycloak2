@@ -3,7 +3,7 @@ import { autoinject } from 'aurelia-framework';
 
 @autoinject
 export class DataAdapter {
-  private baseUrl = "http://localhost:5024";
+  private baseUrl = "http://localhost:5000";
 
   constructor(private httpClient: HttpClient) {
 
