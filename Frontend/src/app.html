@@ -1,4 +1,5 @@
 <template>
+  <require from="@syncfusion/ej2/material3.css"></require>
   <h1 if.bind="keyCloakService.isAuthenticated">${keyCloakService.profile.username}</h1>
   <h1 else>Not authenticated</h1>
   <button if.bind="keyCloakService.isAuthenticated" click.delegate="logout()">Logout</button>
@@ -9,5 +10,10 @@
   <div>
     <span>${lastWebRequest}</span>
   </div>
+
+  <ej2-uploader e-files.bind="files" view-model.ref="widget" e-model.bind="uploaderModel" metadata.bind="metadata"
+    metadata-generator.bind="generateMetaData" upload-result-model.bind="uploadResultModel"
+    data-adapter.bind="dataAdapter" on-success.delegate="onSuccess($event)" on-removing.delegate="onRemoving($event)">
+  </ej2-uploader>
 
 </template>
