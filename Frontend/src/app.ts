@@ -12,9 +12,9 @@ export class App {
   async attached() {
     try {
       await this.keyCloakService.init({
-        clientId: "aurelia-client-id",
-        realm: "MyRealm",
-        url: "http://localhost:8888/"
+        clientId: "DevFrontend",
+        realm: "DevRealm",
+        url: "https://keycloak.dev.fa.com/"
       });
     } catch (e) {
       console.debug("Keycloak not initialized")
