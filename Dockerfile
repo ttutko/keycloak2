@@ -32,8 +32,10 @@ ARG configuration=Release
 RUN dotnet publish "Backend.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
-ADD smooth.tnt.root.crt /usr/local/share/ca-certificates/
-RUN update-ca-certificates
+USER 0
+ADD root_ca.crt /usr/local/share/ca-certificates/
+RUN update-ca-certificates && mkdir /uploadedfiles && chown 1654 /uploadedfiles
+USER 1654
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY --from=ui-build /app/dist ./wwwroot

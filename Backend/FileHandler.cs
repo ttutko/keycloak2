@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 public static class FileHandler
 {
-    private static string folderPath = @"C:\temp\file_uploads";
+    private static string folderPath = @"/uploadedfiles";
     public static IResult Upload(IFormFileCollection UploadFiles, HttpContext context)
     {
         try
@@ -11,10 +11,12 @@ public static class FileHandler
             foreach (var file in UploadFiles)
             {
                 var filename = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-                if (!System.IO.File.Exists(filename))
+                var filetowrite = Path.Combine(folderPath, filename);
+                Console.WriteLine($"Filename Uploaded: {filename} - {filetowrite}");
+                if (!System.IO.File.Exists(filetowrite))
                 {
                     Directory.CreateDirectory(folderPath);
-                    using (var fs = System.IO.File.Create($"{folderPath}\\{filename}"))
+                    using (var fs = System.IO.File.Create($"{filetowrite}"))
                     {
                         file.CopyTo(fs);
                         fs.Flush();
@@ -33,7 +35,8 @@ public static class FileHandler
         }
         catch (Exception e)
         {
-            Results.Content("No Content", "application/json; charset=utf-8");
+            Console.WriteLine($"Exception occurred: {e.ToString()} - {e.Message} - {e.StackTrace}");
+            Results.Content("No Content", "application/text; charset=utf-8");
 
             return Results.StatusCode(204);
         }

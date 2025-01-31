@@ -6,15 +6,22 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Http.Features;
+using RabbitMQ.Client;
+using Backend;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<FormOptions>(fo => {
+    fo.MultipartBodyLengthLimit = Int64.MaxValue;
+    });
 
 builder.Services
     .AddCors(options =>
     {
       options.AddDefaultPolicy(builder =>
       {
-        builder.WithOrigins("http://localhost:5000", "http://127.0.0.1:5000", "https://web.dev.smooth.tnt").AllowAnyHeader().AllowCredentials(); //.WithMethods("GET").AllowCredentials();
+        builder.WithOrigins("http://localhost:5000", "http://127.0.0.1:5000", "https://web.dev.smooth.tnt", "https://web.dev.fa.com").AllowAnyHeader().AllowCredentials(); //.WithMethods("GET").AllowCredentials();
       });
     })
   // .AddCors(options =>
@@ -42,19 +49,20 @@ builder.Services
   //     })
   .AddJwtBearer(o =>
       {
-        o.Authority = "https://keycloak.dev.smooth.tnt/realms/DevRealm";
+        o.Authority = "https://keycloak.dev.fa.com/realms/DevRealm";
         // o.MetadataAddress = "https://keycloak.dev.smooth.tnt/realms/DevRealm";
         o.Audience = "account";
         o.IncludeErrorDetails = true;
         // o.RequireHttpsMetadata = false;
         o.TokenValidationParameters = new TokenValidationParameters
         {
-          ValidIssuer = "https://keycloak.dev.smooth.tnt/realms/DevRealm",
+          ValidIssuer = "https://keycloak.dev.fa.com/realms/DevRealm",
           ValidAudience = "account"          
         };
 
       });
 
+builder.Services.AddHostedService<RabbitmqHostedService>();
 builder.Services.AddAuthorization();
 //builder.Services.AddAntiforgery();
 // .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>

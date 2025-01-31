@@ -17,9 +17,10 @@ export class App {
 
   uploaderModel: UploaderModel = {
     asyncSettings: {
-      saveUrl: "https://localhost:5001/upload",
+      saveUrl: "https://web.dev.fa.com/upload",
       removeUrl: "http://localhost:5000/removeUpload"
     },
+    maxFileSize: 30000000000,
     multiple: false
   }
   _dataAdapter: Ej2UploaderDataAdapter = {
@@ -44,7 +45,7 @@ export class App {
       await this.keyCloakService.init({
         clientId: "DevFrontend",
         realm: "DevRealm",
-        url: "https://keycloak.dev.smooth.tnt/"
+        url: "https://keycloak.dev.fa.com/"
       });
     } catch (e) {
       console.debug("Keycloak not initialized")
